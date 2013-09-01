@@ -13,9 +13,11 @@ typedef struct Vertex
 typedef struct Object
 {
     vertex* vertices;
-    size_t vertices_size;
     unsigned short* indices;
     short coord_space;
+    short vertex_count;
+    short indices_count;
+    short converted;
     float v_coord[3];
 } obj_t;
 

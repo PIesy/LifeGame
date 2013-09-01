@@ -64,3 +64,32 @@ GLuint load_shader(char *shader, GLenum type)
     free(shader);
     return id;
 }
+
+void convert_to_glcoordspace(obj_t *object)
+{
+    int i = 0;
+
+    if (!object->converted)
+        for (i = 0; i < object->vertex_count; i++)
+        {
+            object->vertices[i].coord[0] = (object->vertices[i].coord[0] - 500)/500;
+            object->vertices[i].coord[1] = (object->vertices[i].coord[1] - 300)/300;
+            object->converted = 1;
+        }
+}
+
+void append_to_object(obj_t *target, obj_t *source, float offset_x, float offset_y)
+{
+    int i = 0;
+
+    for (i = 0; i < source->vertex_count; i++)
+    {
+        target->vertices[target->vertex_count + i] = source->vertices[i];
+        target->vertices[target->vertex_count + i].coord[0] += offset_x;
+        target->vertices[target->vertex_count + i].coord[1] += offset_y;
+    }
+    for (i = 0; i < source->indices_count; i++)
+        target->indices[target->indices_count + i] = source->indices[i] + target->vertex_count;
+    target->vertex_count += source->vertex_count;
+    target->indices_count += source->indices_count;
+}

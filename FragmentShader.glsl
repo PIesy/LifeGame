@@ -1,6 +1,6 @@
 #version 400
 
-smooth in vec4 out_color;
+flat in vec4 out_color;
 
 out vec4 color;
 

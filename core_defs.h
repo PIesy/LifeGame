@@ -18,6 +18,9 @@ typedef struct Core_data core_t;
 #define START 1
 #define STOP 2
 #define RENDER_ROUTINE 1
+#define MOUSE_ROUTINE 2
+#define KEYBOARD_ROUTINE 3
+#define RENDER_DATA 8
 
 typedef struct GL_data
 {
@@ -27,6 +30,8 @@ typedef struct GL_data
     GLuint IBO[5];
     GLuint UBO[5];
     GLuint VAO[5];
+    int indices_count;
+    rdr_t* current_render_data;
 } gl_data_t;
 
 typedef struct Window_data
@@ -78,7 +83,7 @@ typedef struct Exit_flags
 typedef struct Sideloaded_routines
 {
     void (*window_routine)(SDL_WindowEvent);
-    void (*mouse_routine)(int);
+    void (*mouse_routine)(m_action_t*);
     void (*keyboard_routine)(SDL_KeyboardEvent);
     void (*render_routine)(GLuint*);
     short wroutine_set;
@@ -98,13 +103,6 @@ typedef struct Core_data
     int start;
 } core_t;
 
-typedef struct Mouse_actions
-{
-    int action_id;
-    int x;
-    int y;
-} m_action_t;
-
 void* core_thread(void* render_queue_id);
 void* render(void* input);
 void* keyboard_handler(void* input);
@@ -121,7 +119,7 @@ struct Request_data
     int mode;
     int attr_name;
     void* data;
-    void (*fun)(GLuint*);
+    void (*fun)(void*);
 } data_request;
 
 #endif // CORE_DEFS_H

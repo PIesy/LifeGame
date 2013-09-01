@@ -24,6 +24,13 @@
 #define CORE_SET_HEIGHT 2
 #define CORE_SET_WIDTH 3
 
+typedef struct Mouse_actions
+{
+    int action_id;
+    int x;
+    int y;
+} m_action_t;
+
 typedef union core_attribute
 {
     SDL_Window* window_id;
@@ -33,9 +40,14 @@ typedef union core_attribute
 
 pthread_t core_init(void);
 core_attr_t get_core_attribute(int attribute);
+rdr_t* core_get_render_data(void);
 void set_core_attribute(int attribute, void* value);
 void core_load_render_data(rdr_t* render_data);
+void core_attach_mouse_routine(void (*fun)(m_action_t*));
 void core_attach_render_routine(void (*fun)(GLuint*));
+void core_attach_keyboard_routine(void (*fun)(SDL_KeyboardEvent));
 void core_start(void);
 void core_stop(void);
+int core_check_state(void);
+
 #endif // CORE_H

@@ -166,7 +166,7 @@ void* render(void* input)
         core_gl_fetch_data(core_data);
         core_gl_draw(core_data);
         SDL_GL_SwapWindow(core_data->graphics_data.window_data.window_id);
-        SDL_Delay(1);
+        SDL_Delay(10);
     }
     SDL_GL_DeleteContext(gl_context);
     fprintf (stderr,"OpenGL context destroyed\n");
@@ -208,6 +208,9 @@ void* request_handler(void *input)
             case CORE_CURRENT_RENDER_QUEUE:
                 ((core_attr_t*)data_request.data)->current_render_queue_id = core_data->graphics_data.window_data.current_render_queue;
                 break;
+            case RENDER_DATA:
+                *(rdr_t**)data_request.data = core_data->graphics_data.gl_data.current_render_data;
+                break;
             }
             break;
         case 2:
@@ -242,12 +245,19 @@ void* request_handler(void *input)
                 core_data->sideloaded_routines.render_routine = data_request.fun;
                 core_data->sideloaded_routines.rroutine_set = 1;
                 break;
+            case MOUSE_ROUTINE:
+                core_data->sideloaded_routines.mouse_routine = data_request.fun;
+                break;
+            case KEYBOARD_ROUTINE:
+                core_data->sideloaded_routines.keyboard_routine = data_request.fun;
+                break;
             }
             break;
         }
         data_request.mode = -1;
         SDL_Delay(1);
     }
+    data_request.mode = -2;
     fprintf (stderr,"Request thread terminated\n");
     return NULL;
 }
@@ -301,6 +311,8 @@ void* mouse_handler(void *input)
             event->new_mouse_event = 0;
             core_data->sync.mouse_ready = 1;
             mouse_action = mouse_actions(&current_event);
+            if (core_data->sideloaded_routines.mouse_routine)
+                core_data->sideloaded_routines.mouse_routine(&mouse_action);
             if (mouse_action.action_id == 23)
             {
                 fprintf (stderr,"\nBombs dropped\n\n");
@@ -402,4 +414,38 @@ void core_attach_render_routine(void (*fun)(GLuint *))
     data_request.attr_name = RENDER_ROUTINE;
     data_request.mode = 5;
     while (data_request.mode != -1);
+}
+
+void core_attach_mouse_routine(void (*fun)(m_action_t *))
+{
+    data_request.fun = (*fun);
+    data_request.attr_name = MOUSE_ROUTINE;
+    data_request.mode = 5;
+    while (data_request.mode != -1);
+}
+
+void core_attach_keyboard_routine(void (*fun)(SDL_KeyboardEvent))
+{
+    data_request.fun = (*fun);
+    data_request.attr_name = KEYBOARD_ROUTINE;
+    data_request.mode = 5;
+    while (data_request.mode != -1);
+}
+
+rdr_t* core_get_render_data(void)
+{
+    rdr_t* return_value;
+
+    data_request.data = &return_value;
+    data_request.attr_name = RENDER_DATA;
+    data_request.mode = 1;
+    while (data_request.mode != -1);
+    return return_value;
+}
+
+int core_check_state(void)
+{
+    if (data_request.mode == -2)
+        return 0;
+    return 1;
 }

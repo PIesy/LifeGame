@@ -40,8 +40,8 @@ void read_mesh_data(obj_t *object, FILE *file)
         switch (type){
         case 1:
             count = atoi(buff);
+            object->vertex_count = count;
             object->vertices = (vertex*)calloc(count, sizeof(vertex));
-            object->vertices_size = count * sizeof(vertex);
             break;
         case 2:
             sscanf(buff, "%f %f %f %f", &(object->vertices[i].coord[0]), &(object->vertices[i].coord[1]), &(object->vertices[i].coord[2]), &(object->vertices[i].coord[3]));
@@ -53,6 +53,7 @@ void read_mesh_data(obj_t *object, FILE *file)
             break;
         case 4:
             count = atoi(buff);
+            object->indices_count = count;
             object->indices = (unsigned short*)calloc(count, sizeof(short));
             break;
         case 5:
