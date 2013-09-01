@@ -26,5 +26,6 @@ HEADERS += \
 OTHER_FILES += \
     VertexShader.glsl \
     FragmentShader.glsl \
-    square.txt
+    square.txt \
+    README.md
 
