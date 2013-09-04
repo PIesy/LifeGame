@@ -17,7 +17,6 @@ void core_gl_init(core_t* core_data)
 
 void core_gl_fetch_data(core_t *core_data)
 {
-    GLenum err;
     gl_data_t* gl_data = &(core_data->graphics_data.gl_data);
     rdr_t* render_data;
 
@@ -33,8 +32,6 @@ void core_gl_fetch_data(core_t *core_data)
         gl_data->indices_count = render_data->objects[0]->indices_count;
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, render_data->objects[0]->indices_count * sizeof(short), render_data->objects[0]->indices);
         glUseProgram(gl_data->program_id[0]);
-        if ((err = glGetError()) != GL_NO_ERROR)
-            fprintf (stderr, "Error %s\n", gluGetString(err));
     }
 }
 

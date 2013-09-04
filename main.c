@@ -204,7 +204,7 @@ int grid_check_circular(int y, int x)
 
 void start_calculating_life_game(SDL_KeyboardEvent key)
 {
-    if (key.keysym.scancode == SDL_SCANCODE_S && key.type == SDL_KEYUP)
+    if (key.keysym.scancode == SDL_SCANCODE_SPACE && key.type == SDL_KEYUP)
     {
         start = 1 - start;
         if (start)
